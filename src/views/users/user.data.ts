@@ -67,7 +67,7 @@ export const userFormSchema: FormSchema[] = [
     component: 'InputPassword',
     rules: [
       { required: true },
-      { min: 8, message: '密码长度至少8位' },
+      { min: 8, max: 20, message: '密码长度8-20位' },
     ],
   },
   {

@@ -12,6 +12,7 @@ enum Api {
   ClearCache = '/menu_cache_clear',
   Login = '/login',
   Logout = '/logout',
+  ResetPassword = '/reset_password',
   GetUserInfo = '/me',
   GetPermCode = '/permissions',
 }
@@ -44,6 +45,13 @@ export function getPermCode() {
 
 export function doLogout() {
   return defHttp.get({ url: Api.Logout })
+}
+
+export function resetPassword(data: BasicParams) {
+  return defHttp.post({
+    data,
+    url: Api.ResetPassword
+  })
 }
 
 export const userApi = {

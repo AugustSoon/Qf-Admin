@@ -14,18 +14,24 @@
         <MenuItem
           v-if="getUseLockPage"
           key="lock"
-          :text="t('layout.header.tooltipLock')"
+          text="锁定屏幕"
           icon="ion:lock-closed-outline"
         />
         <MenuItem
+          key="password"
+          text="修改密码"
+          icon="carbon:password"
+        />
+        <MenuItem
           key="logout"
-          :text="t('layout.header.dropdownItemLoginOut')"
+          text="退出系统"
           icon="ion:power-outline"
         />
       </Menu>
     </template>
   </Dropdown>
   <LockAction @register="register" />
+  <Password @register="registerPassword" />
 </template>
 <script lang="ts">
   // components
@@ -35,16 +41,16 @@
 
   import { useUserStore } from '/@/store/modules/user';
   import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
-  import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useModal } from '/@/components/Modal';
+  import Password from '../Password.vue'
 
   import headerImg from '/@/assets/images/header.jpg';
   import { propTypes } from '/@/utils/propTypes';
 
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
 
-  type MenuEvent = 'logout' | 'lock';
+  type MenuEvent = 'logout' | 'password' | 'lock';
 
   export default defineComponent({
     name: 'UserDropdown',
@@ -53,6 +59,7 @@
       Menu,
       MenuItem: createAsyncComponent(() => import('./DropMenuItem.vue')),
       MenuDivider: Menu.Divider,
+      Password,
       LockAction: createAsyncComponent(() => import('../lock/LockModal.vue')),
     },
     props: {
@@ -60,7 +67,6 @@
     },
     setup() {
       const { prefixCls } = useDesign('header-user-dropdown');
-      const { t } = useI18n();
       const { getUseLockPage } = useHeaderSetting();
       const userStore = useUserStore();
 
@@ -70,9 +76,14 @@
       });
 
       const [register, { openModal }] = useModal();
+      const [registerPassword, { openModal: openPassword }] = useModal();
 
       function handleLock() {
         openModal(true);
+      }
+
+      function handlePassword() {
+        openPassword(true)
       }
 
       //  login out
@@ -85,6 +96,9 @@
           case 'logout':
             handleLoginOut();
             break;
+          case 'password':
+            handlePassword();
+            break;
           case 'lock':
             handleLock();
             break;
@@ -93,10 +107,10 @@
 
       return {
         prefixCls,
-        t,
         getUserInfo,
         handleMenuClick,
         register,
+        registerPassword,
         getUseLockPage,
       };
     },
