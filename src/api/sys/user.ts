@@ -50,7 +50,7 @@ export function doLogout() {
 export function resetPassword(data: BasicParams) {
   return defHttp.post({
     data,
-    url: Api.ResetPassword
+    url: Api.ResetPassword,
   })
 }
 
@@ -99,7 +99,7 @@ export const logsApi = {
     })
   },
   clearCache: () => {
-    return defHttp.post({
+    return defHttp.get({
       url: Api.ClearCache,
     })
   },
