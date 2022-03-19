@@ -3,10 +3,10 @@
     <BasicForm @register="registerForm">
       <template #permission>
         <BasicTree
-          style="padding-bottom: 10px;"
+          style="padding-bottom: 10px"
           checkable
           :treeData="menuData"
-          :replaceFields="{ title: 'introduction' }" 
+          :replaceFields="{ title: 'introduction' }"
           :checkStrictly="checkStrictly"
           :checkedKeys="checkedKeys"
           @check="menuCheck"
@@ -56,12 +56,12 @@
           rowId.value = data.record.id
           checkStrictly.value = true
           checkedKeys.value = data.record.permission
-          setFieldsValue({...data.record})
+          setFieldsValue({ ...data.record })
           await nextTick()
           checkStrictly.value = false
         } else {
           checkedKeys.value = []
-        } 
+        }
       })
 
       const getTitle = computed(() => (!unref(isUpdate) ? '添加角色' : '编辑角色'))
@@ -71,7 +71,7 @@
         const permission = [...checkKeys, ...halfCheckedKeys]
         checkStrictly.value = true
         setFieldsValue({
-          permission
+          permission,
         })
         await nextTick()
         checkStrictly.value = false
@@ -92,7 +92,7 @@
           setModalProps({ confirmLoading: false })
           closeModal()
           emit('success')
-        } catch(err) {
+        } catch (err) {
           setModalProps({ confirmLoading: false })
         }
       }
