@@ -52,7 +52,7 @@
         </template>
       </FormItem>
     </template>
-    <FormItem :wrapper-col="{ span: 8, offset: 2 }">
+    <FormItem v-auth="'system.config.store'" :wrapper-col="{ span: 8, offset: 2 }">
       <a-button type="primary" :loading="loading" @click="handleSubmit">保存</a-button>
     </FormItem>
   </Form>
