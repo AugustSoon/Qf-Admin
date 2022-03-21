@@ -81,7 +81,7 @@
 
       const globSetting = useGlobSetting()
       const apiUrl = `${globSetting.apiUrl}${globSetting.urlPrefix}`
-      const uploadUrl = `${apiUrl}/upload`
+      const uploadUrl = `${apiUrl}/config_upload`
       const uploadHeaders = reactive({ authorization: `Bearer ${getToken()}` })
 
       function handleChange(info: FileInfo) {
