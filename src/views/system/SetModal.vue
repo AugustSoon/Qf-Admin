@@ -179,7 +179,7 @@
 
           setModalProps({ confirmLoading: true })
 
-          if (unref(rowId) > 0) {
+          if (unref(isUpdate)) {
             await setApi.edit(rowId.value, params)
           } else {
             await setApi.create(params)
