@@ -6,9 +6,9 @@
           style="padding-bottom: 10px"
           checkable
           :treeData="menuData"
-          :replaceFields="{ title: 'introduction' }"
-          :checkStrictly="checkStrictly"
+          :checkStrictly="true"
           :checkedKeys="checkedKeys"
+          :replaceFields="{ title: 'introduction' }"
           @check="menuCheck"
         />
       </template>
@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref, computed, unref, nextTick } from 'vue'
+  import { defineComponent, ref, computed, unref } from 'vue'
 
   import { BasicModal, useModalInner } from '/@/components/Modal'
   import { BasicForm, useForm } from '/@/components/Form/index'
@@ -33,7 +33,6 @@
     setup(_, { emit }) {
       const rowId = ref(0)
       const isUpdate = ref(true)
-      const checkStrictly = ref(false)
       const menuData = ref<TreeItem[]>([])
       const checkedKeys = ref<string[]>([])
 
@@ -53,28 +52,91 @@
         }
 
         if (unref(isUpdate)) {
-          rowId.value = data.record.id
-          checkStrictly.value = true
-          checkedKeys.value = data.record.permission
-          setFieldsValue({ ...data.record })
-          await nextTick()
-          checkStrictly.value = false
+          const { id, name, permission } = data.record
+          rowId.value = id
+          checkedKeys.value = permission
+          setFieldsValue({ name, permission })
         } else {
+          rowId.value = 0
           checkedKeys.value = []
         }
       })
 
       const getTitle = computed(() => (!unref(isUpdate) ? '添加角色' : '编辑角色'))
 
-      async function menuCheck(checkKeys: string[], e: CheckEvent) {
-        const { halfCheckedKeys } = e
-        const permission = [...checkKeys, ...halfCheckedKeys]
-        checkStrictly.value = true
-        setFieldsValue({
-          permission,
+      async function menuCheck(_: Recordable, e: CheckEvent) {
+        const { checked } = e
+        const { pos, eventKey } = e.node
+        const parentKeys = getParentKeys(pos)
+        const keys = [eventKey, ...getChildren(pos)]
+        const checkedKeysValue = unref(checkedKeys)
+
+        if (checked) {
+          keys.forEach((item) => {
+            if (checkedKeysValue.findIndex((one) => one === item) === -1) {
+              checkedKeysValue.push(item)
+            }
+          })
+          parentKeys.forEach((item) => {
+            if (checkedKeysValue.findIndex((one) => one === item) === -1) {
+              checkedKeysValue.push(item)
+            }
+          })
+          checkedKeys.value = [...checkedKeysValue]
+        } else {
+          checkedKeys.value = checkedKeysValue.filter((item) => {
+            return keys.findIndex((one) => one === item) === -1
+          })
+        }
+
+        setFieldsValue({ permission: checkedKeys.value })
+      }
+
+      function getParentKeys(pos: string) {
+        const path = pos.split('-')
+        const item = menuData.value
+        let keys: string[] = []
+        let data = undefined as any as Recordable
+
+        for (let i = 1; i < path.length - 1; i++) {
+          const index = path[i]
+          if (!data) data = item[index]
+          else data = data.children[index]
+
+          keys.push(data.key)
+        }
+
+        return keys
+      }
+
+      function getChildren(pos: string) {
+        const path = pos.split('-')
+        const item = menuData.value
+        let data = undefined as any as Recordable
+
+        for (let i = 1; i < path.length; i++) {
+          const index = path[i]
+          if (!data) data = item[index]
+          else data = data.children[index]
+        }
+
+        const keys = getChildrenKeys(data)
+
+        return keys
+      }
+
+      function getChildrenKeys(data: Recordable, keys: string[] = []) {
+        const children = data.children || []
+
+        children.forEach((item: Recordable) => {
+          keys.push(item.key)
+
+          if (item.children) {
+            keys = getChildrenKeys(item, keys)
+          }
         })
-        await nextTick()
-        checkStrictly.value = false
+
+        return keys
       }
 
       async function handleSubmit() {
@@ -100,7 +162,6 @@
       return {
         menuData,
         getTitle,
-        checkStrictly,
         checkedKeys,
         menuCheck,
         handleSubmit,

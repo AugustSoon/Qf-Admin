@@ -79,7 +79,7 @@ export const userApi = {
     })
   },
   del: (id: number) => {
-    return defHttp.get({
+    return defHttp.delete({
       url: Api.User,
       params: `/${id}`,
     })
