@@ -57,6 +57,7 @@
           rowId.value = data.record.id
           setFieldsValue({ ...data.record })
         } else {
+          rowId.value = 0
           setFieldsValue({
             status: true,
           })
